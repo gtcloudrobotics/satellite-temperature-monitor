@@ -1,0 +1,4 @@
+build/
+config.ini
+temperature_log.txt
+fault_log.txt

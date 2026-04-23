@@ -1,0 +1,37 @@
+name: Autograding
+
+on:
+  push:
+  workflow_dispatch:
+  repository_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  actions: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake libboost-program-options-dev
+
+      - name: Autograde
+        id: autograde
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Satellite monitor tests
+          command: python3 tests/run_tests.py
+          timeout: 30
+          max-score: 8
+
+      - uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          AUTOGRADE_RESULTS: ${{ steps.autograde.outputs.result }}
+        with:
+          runners: autograde
